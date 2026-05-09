@@ -50,8 +50,22 @@ python train.py
 - NumPy
 - Matplotlib
 
+## Lessons Learned
+
+- Learned how DQN handles dynamic decision-making
+- Understood experiment tracking in MLOps
+- Improved Git versioning workflow
+- Learned Streamlit dashboard deployment
+
+## Future Improvements
+
+- Real-time IoT parking sensors
+- Cloud deployment
+- Double DQN implementation
+- Live traffic integration
+
 ## Author
-Gurupriya Avadhani M M
-Hamsa Shree D N
-Pavan
-Praneetha
+Gurupriya Avadhani M M,
+Hamsa Shree D N,
+Pavan,
+Praneetha.
