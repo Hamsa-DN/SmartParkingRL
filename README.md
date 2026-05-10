@@ -69,3 +69,5 @@ Gurupriya Avadhani M M,
 Hamsa Shree D N,
 Pavan,
 Praneetha.
+
+- Added pull request workflow for GitOps demonstration.
