@@ -2,6 +2,8 @@
 
 import random
 import csv
+import mlflow
+import mlflow.pytorch
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -46,6 +48,26 @@ epsilon = 1.0
 epsilon_decay = 0.995
 
 epsilon_min = 0.01
+
+
+# =========================
+# MLflow Tracking
+# =========================
+
+mlflow.set_experiment("SmartParkingDQN")
+
+mlflow.start_run()
+
+# Log Hyperparameters
+mlflow.log_param("episodes", episodes)
+
+mlflow.log_param("gamma", gamma)
+
+mlflow.log_param("epsilon_start", epsilon)
+
+mlflow.log_param("epsilon_decay", epsilon_decay)
+
+mlflow.log_param("learning_rate", 0.001)
 
 
 # =========================
@@ -167,17 +189,49 @@ for episode in range(episodes):
     # Save Episode Metrics
     # =========================
 
+    avg_queue = np.mean(episode_queue)
+
+    avg_wait = np.mean(episode_wait)
+
     episode_rewards.append(total_reward)
 
-    episode_queue_avg.append(np.mean(episode_queue))
+    episode_queue_avg.append(avg_queue)
 
-    episode_wait_avg.append(np.mean(episode_wait))
+    episode_wait_avg.append(avg_wait)
+
+    # =========================
+    # MLflow Metrics Logging
+    # =========================
+
+    mlflow.log_metric(
+        "reward",
+        total_reward,
+        step=episode
+    )
+
+    mlflow.log_metric(
+        "avg_queue_length",
+        avg_queue,
+        step=episode
+    )
+
+    mlflow.log_metric(
+        "avg_wait_time",
+        avg_wait,
+        step=episode
+    )
+
+    mlflow.log_metric(
+        "epsilon",
+        epsilon,
+        step=episode
+    )
 
     print(
         f"Episode {episode+1} | "
         f"Reward: {total_reward:.2f} | "
-        f"Avg Queue: {np.mean(episode_queue):.2f} | "
-        f"Avg Wait: {np.mean(episode_wait):.2f} | "
+        f"Avg Queue: {avg_queue:.2f} | "
+        f"Avg Wait: {avg_wait:.2f} | "
         f"Epsilon: {epsilon:.3f}"
     )
 
@@ -186,16 +240,29 @@ for episode in range(episodes):
 # Save Trained Model
 # =========================
 
-torch.save(model.state_dict(), "models/dqn_policy_v1.pth")
+torch.save(
+    model.state_dict(),
+    "models/dqn_policy_v1.pth"
+)
 
 print("\nModel saved successfully!")
+
+# Log model to MLflow
+mlflow.pytorch.log_model(
+    model,
+    "dqn_model"
+)
 
 
 # =========================
 # Save Experiment Results
 # =========================
 
-with open("experiments/results.csv", "a", newline="") as file:
+with open(
+    "experiments/results.csv",
+    "a",
+    newline=""
+) as file:
 
     writer = csv.writer(file)
 
@@ -273,7 +340,31 @@ plt.savefig("plots/queue_plot.png")
 
 
 # =========================
+# Log Plot Artifacts
+# =========================
+
+mlflow.log_artifact(
+    "plots/reward_plot.png"
+)
+
+mlflow.log_artifact(
+    "plots/waiting_time_plot.png"
+)
+
+mlflow.log_artifact(
+    "plots/queue_plot.png"
+)
+
+
+# =========================
 # Show All Graphs
 # =========================
 
 plt.show()
+
+
+# =========================
+# End MLflow Run
+# =========================
+
+mlflow.end_run()
