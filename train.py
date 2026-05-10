@@ -1,6 +1,7 @@
 # train.py
 
 import random
+import os
 import csv
 import mlflow
 import mlflow.pytorch
@@ -13,7 +14,15 @@ import matplotlib.pyplot as plt
 from sim.parking_env import SmartParkingEnv
 from rl.dqn import DQN
 
+# =========================
+# Create Required Directories
+# =========================
 
+os.makedirs("models", exist_ok=True)
+
+os.makedirs("plots", exist_ok=True)
+
+os.makedirs("experiments", exist_ok=True)
 # =========================
 # Environment Initialization
 # =========================
