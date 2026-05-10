@@ -62,6 +62,9 @@ epsilon_min = 0.01
 # =========================
 # MLflow Tracking
 # =========================
+# Set local MLflow tracking directory
+
+mlflow.set_tracking_uri("file:./mlruns")
 
 mlflow.set_experiment("SmartParkingDQN")
 
